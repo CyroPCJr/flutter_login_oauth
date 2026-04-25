@@ -17,15 +17,23 @@ import 'feature/auth/presentation/viewmodels/auth_viewmodel.dart';
 final sl = GetIt.instance;
 
 Future<void> init() async {
-  sl.registerLazySingleton(() => FirebaseAuth.instance);
-  sl.registerLazySingleton(() => GoogleSignIn);
-  sl.registerLazySingleton(() => const FlutterSecureStorage());
-  sl.registerLazySingleton(() => SecureStorageService(sl()));
+  sl.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
+  sl.registerLazySingleton<FlutterSecureStorage>(
+    () => const FlutterSecureStorage(),
+  );
+  sl.registerLazySingleton<SecureStorageService>(
+    () => SecureStorageService(sl()),
+  );
+
+  final googleSignIn = GoogleSignIn.instance;
+  await googleSignIn.initialize();
+
+  sl.registerSingleton<GoogleSignIn>(googleSignIn);
 
   sl.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(
-      firebaseAuth: sl(),
-      googleSignIn: sl(),
+      firebaseAuth: sl<FirebaseAuth>(),
+      googleSignIn: sl<GoogleSignIn>(),
     ),
   );
 
@@ -34,20 +42,23 @@ Future<void> init() async {
   );
 
   sl.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(remote: sl(), local: sl()),
+    () => AuthRepositoryImpl(
+      remote: sl<AuthRemoteDataSource>(),
+      local: sl<AuthLocalDataSource>(),
+    ),
   );
 
-  sl.registerLazySingleton(() => LoginWithEmail(sl()));
-  sl.registerLazySingleton(() => LoginWithGoogle(sl()));
-  sl.registerLazySingleton(() => GetCurrentUser(sl()));
-  sl.registerLazySingleton(() => Logout(sl()));
+  sl.registerLazySingleton(() => LoginWithEmail(sl<AuthRepository>()));
+  sl.registerLazySingleton(() => LoginWithGoogle(sl<AuthRepository>()));
+  sl.registerLazySingleton(() => GetCurrentUser(sl<AuthRepository>()));
+  sl.registerLazySingleton(() => Logout(sl<AuthRepository>()));
 
   sl.registerFactory(
     () => AuthViewModel(
-      loginWithEmailUseCase: sl(),
-      loginWithGoogleUseCase: sl(),
-      getCurrentUserUseCase: sl(),
-      logoutUseCase: sl(),
+      loginWithEmailUseCase: sl<LoginWithEmail>(),
+      loginWithGoogleUseCase: sl<LoginWithGoogle>(),
+      getCurrentUserUseCase: sl<GetCurrentUser>(),
+      logoutUseCase: sl<Logout>(),
     ),
   );
 }

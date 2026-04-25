@@ -50,19 +50,17 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<UserModel> loginWithGoogle() async {
     try {
-      final GoogleSignInAccount account = await googleSignIn.authenticate();
+      final GoogleSignInAccount googleUser = await googleSignIn.authenticate();
 
-      final authentication = account.authentication;
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
       final credential = GoogleAuthProvider.credential(
-        idToken: authentication.idToken,
+        idToken: googleAuth.idToken,
       );
 
-      final userCredential = await firebaseAuth.signInWithCredential(
-        credential,
-      );
+      final result = await firebaseAuth.signInWithCredential(credential);
+      final user = result.user;
 
-      final user = userCredential.user;
       if (user == null) {
         throw Exception('Falha ao autenticar com Google.');
       }
@@ -72,7 +70,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (e.code == GoogleSignInExceptionCode.canceled) {
         throw Exception('Login com Google cancelado.');
       }
-      throw Exception('Erro no login com Google: ${e.description}');
+
+      throw Exception(
+        'Erro no login com Google: ${e.description ?? e.code.name}',
+      );
     }
   }
 

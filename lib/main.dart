@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import 'feature/auth/presentation/pages/splash_page.dart';
 import 'feature/auth/presentation/viewmodels/auth_viewmodel.dart';
+import 'firebase_options.dart';
 import 'injection_container.dart' as di;
 
 Future<void> main() async {
