@@ -53,7 +53,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyC8Cp3ob_uaYRxpygfkGZHUeKMG7j_bcIY',
+    apiKey: 'YOUR_API_KEY_HERE', // REGENERATE from Firebase Console
     appId: '1:672648343005:android:c67fa686e6cc08598c5a34',
     messagingSenderId: '672648343005',
     projectId: 'flutter-login-system-c7cf6',

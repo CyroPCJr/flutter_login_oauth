@@ -49,6 +49,10 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Firebase and API configuration - NEVER commit these
+android/app/google-services.json
+lib/firebase_options.dart
+
 # Android related
 **/android/**/gradle-wrapper.jar
 **/android/.gradle
